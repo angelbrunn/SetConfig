@@ -20,6 +20,8 @@ namespace SetConfig
             do
             {
                 Console.WriteLine("-------------------------------------");
+                Console.WriteLine("---------|Bach SIS-Atlantida---------");
+                Console.WriteLine("-------------------------------------");
                 Console.WriteLine("[ 0 ] Servidor/Server");
                 Console.WriteLine("[ 1 ] Maquina/Machine");
                 Console.WriteLine("[ 2 ] Guardar/Save");
