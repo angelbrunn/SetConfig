@@ -42,7 +42,7 @@ namespace SetConfig
                 Console.ReadKey();
                 Console.Clear();
             }
-            while (op != 0);
+            while (op != 3);
         }
 
     
@@ -70,8 +70,8 @@ namespace SetConfig
 
             //SAVE APP.CONFIG FILE
             // Compose a string that consists of three lines.
-            String providerName = "providerName =\"/System.Data.SqlClient\"/";
-            String name = "name = \"/AtlantidaDev\"/ />";
+            String providerName = "providerName =\"System.Data.SqlClient\" ";
+            String name = "name = \"AtlantidaDev\"/>";
 
             string appConfig1 = "<connectionStrings>";
             string appConfig2 = "<add connectionString=Data Source = " + machine + "\\"+ Servidor + "; Initial Catalog = AtlantidaDev; Integrated Security = True " + providerName + " " + name;
