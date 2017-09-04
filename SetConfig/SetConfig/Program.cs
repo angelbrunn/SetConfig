@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace SetConfig
 {
@@ -13,6 +15,7 @@ namespace SetConfig
 
         static void Main(string[] args)
         {
+            createDirectory();
             int op;
             do
             {
@@ -88,6 +91,63 @@ namespace SetConfig
 
         private void moveFilesConfig()
         {
+        }
+
+        static void ExecuteCommand()
+        {
+            int exitCode;
+            ProcessStartInfo processInfo;
+            Process process;
+
+            processInfo = new ProcessStartInfo("cmd.exe");
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            // *** Redirect the output ***
+            processInfo.RedirectStandardError = true;
+            processInfo.RedirectStandardOutput = true;
+
+            process = Process.Start(processInfo);
+            process.WaitForExit();
+
+            // *** Read the streams ***
+            // Warning: This approach can lead to deadlocks, see Edit #2
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+
+            exitCode = process.ExitCode;
+
+            Console.WriteLine("output>>" + (String.IsNullOrEmpty(output) ? "(none)" : output));
+            Console.WriteLine("error>>" + (String.IsNullOrEmpty(error) ? "(none)" : error));
+            Console.WriteLine("ExitCode: " + exitCode.ToString(), "ExecuteCommand");
+            process.Close();
+        }
+
+        static void createDirectory(){
+            // Specify the directory you want to manipulate.
+            string path1 = @"c:\Atlantida";
+            string path2 = @"c:\Atlantida\data";
+
+            try
+            {
+                // Determine whether the directory exists.
+                if (Directory.Exists(path1) || Directory.Exists(path2))
+                {
+                    Console.WriteLine("That path exists already.");
+                    return;
+                }
+
+                // Try to create the directory.
+                DirectoryInfo di1 = Directory.CreateDirectory(path1);
+                DirectoryInfo di2 = Directory.CreateDirectory(path2);
+                Console.WriteLine("The directory was created successfully at {0}.", Directory.GetCreationTime(path1));
+                Console.WriteLine("The directory was created successfully at {0}.", Directory.GetCreationTime(path2));
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The process failed: {0}", e.ToString());
+            }
+            finally { }
         }
     }
 }
