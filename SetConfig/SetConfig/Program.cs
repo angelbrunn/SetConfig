@@ -12,8 +12,7 @@ namespace SetConfig
 {
     class Program
     {
-        public static String servidor;
-        public static String machine;
+        public static String serverSQL;
         public static Boolean isSave = false;
         static void Main(string[] args)
         {
@@ -27,7 +26,6 @@ namespace SetConfig
                 Console.WriteLine("-------------------------------------");
                 Console.WriteLine("---------|Bach SIS-Atlantida|--------");
                 Console.WriteLine("-------------------------------------");
-                Console.WriteLine("[ 0 ] Servidor/Server");
                 Console.WriteLine("[ 1 ] ServidorSQL/ServerSQL");
                 Console.WriteLine("[ 2 ] Guardar/Save");
                 Console.WriteLine("[ 3 ] Iniciar/Initialize");
@@ -37,26 +35,23 @@ namespace SetConfig
                 op = Int32.Parse(Console.ReadLine());
                 switch (op)
                 {
-                    case 0:
-                       setConfigServer();
-                        break;
                     case 1:
-                        setConfigMachine();
+                        setConfigSQLMachine();
                         break;
                     case 2:
-                        if (!string.IsNullOrEmpty(servidor) && !string.IsNullOrEmpty(servidor))
+                        if (!string.IsNullOrEmpty(serverSQL))
                         {
-                            saveFiles(servidor, machine);
+                            saveFiles(serverSQL);
                             isSave = true;
-                            Console.WriteLine("Se configuro nombre de servidorSQL y nombre de Maquina. Inicie!");
+                            Console.WriteLine("Se configuro nombre de servidorSQL. Inicie!");
                         }
                         else
                         {
-                            Console.WriteLine("Falta configurar nombre de servidorSQL y nombre de Maquina.");
+                            Console.WriteLine("Falta configurar nombre de servidorSQL.");
                         };
                         break;
                     case 3:
-                        if (!string.IsNullOrEmpty(servidor) && !string.IsNullOrEmpty(servidor))
+                        if (!string.IsNullOrEmpty(serverSQL))
                         {
                             if (isSave == true)
                             {
@@ -69,7 +64,7 @@ namespace SetConfig
                             }
                         }
                         else {
-                            Console.WriteLine("Falta configurar nombre de servidorSQL y nombre de Maquina.");
+                            Console.WriteLine("Falta configurar nombre de servidorSQL.");
                         };
                         break;
                     case 4:
@@ -82,22 +77,17 @@ namespace SetConfig
             while (op != 4);
         }
 
-    
-        private static void setConfigServer() {
-            Console.WriteLine("Servidor/Server :");
-            servidor = Console.ReadLine();
+        private static void setConfigSQLMachine()
+        {
+            Console.WriteLine("Instancia SQL/SQL Instance :");
+            serverSQL = Console.ReadLine();
         }
 
-        private static void setConfigMachine(){
-            Console.WriteLine("Maquina/Machine :");
-            machine = Console.ReadLine();
-        }
-
-        private static void saveFiles(String Servidor,String machine)
+        private static void saveFiles(String Servidor)
         {
             //SAVE DB FILE
             // Compose a string that consists of three lines.
-            string sqlcommand = "SQLCMD -S " + machine + " -E -i script_generacion_Atlantida_db.sql";
+            string sqlcommand = "SQLCMD -S " + Servidor + " -E -i script_generacion_Atlantida_db.sql";
 
             // Write the string to a file.
             System.IO.StreamWriter dbFile = new System.IO.StreamWriter("c:\\SIS_AtlantidaConfig\\InstallerDB.bat");
@@ -113,7 +103,7 @@ namespace SetConfig
             string appConfigh0 = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>";
             string appConfigh1 = "<configuration>";
             string appConfig1 = "<connectionStrings>";
-            string appConfig2 = "<add connectionString=\"Data Source=" + machine + ";Initial Catalog=AtlantidaDev;Integrated Security=True \"" + providerName + " " + name;
+            string appConfig2 = "<add connectionString=\"Data Source=" + Servidor + ";Initial Catalog=AtlantidaDev;Integrated Security=True\"" + " " + providerName + " " + name;
             string appConfig3 = "</connectionStrings>";
             string appConfig4 = "</configuration>";
 
@@ -228,6 +218,8 @@ namespace SetConfig
             string sourcePath = @"C:\SIS_AtlantidaConfig\data";
             string targetPath = @"C:\Program Files (x86)\SISAtlantida\Atlantida";
 
+            //string targetPath = @"C:\Users\AGPB\Desktop\tmp";
+
             // Use Path class to manipulate file and directory paths.
             string sourceFile = System.IO.Path.Combine(sourcePath, fileName);
             string destFile = System.IO.Path.Combine(targetPath, fileName);
@@ -242,42 +234,10 @@ namespace SetConfig
             // To copy a file to another location and 
             // overwrite the destination file if it already exists.
 
-            //FileInfo file1 = new FileInfo(@"C:\Program Files (x86)\SISAtlantida\Atlantida\script\Atlantida.UI.exe.config");
-            // FileInfo file2 = new FileInfo(@"C:\SIS_AtlantidaConfig\data\script\Atlantida.UI.exe.config");
-            // FileSecurity ac1 = file1.GetAccessControl();
-            //ac1.SetAccessRuleProtection(true, true);
-            //file2.SetAccessControl(ac1);
-            string fileA = targetPath + "\\" + fileName;
-            FileSecurity securityA = File.GetAccessControl(fileA);
 
-            string fileB = sourcePath + "\\" + fileName;
-            File.SetAccessControl(fileB, securityA);
+            //File.SetAttributes(destFile, (new FileInfo(destFile)).Attributes | FileAttributes.System);
+            System.IO.File.Copy(sourceFile, destFile, true);
 
-            System.IO.File.Copy(fileB, fileA, true);
-
-            // To copy all the files in one directory to another directory.
-            // Get the files in the source folder. (To recursively iterate through
-            // all subfolders under the current directory, see
-            // "How to: Iterate Through a Directory Tree.")
-            // Note: Check for target path was performed previously
-            //       in this code example.
-            if (System.IO.Directory.Exists(sourcePath))
-            {
-                string[] files = System.IO.Directory.GetFiles(sourcePath);
-
-                // Copy the files and overwrite destination files if they already exist.
-                foreach (string s in files)
-                {
-                    // Use static Path methods to extract only the file name from the path.
-                    fileName = System.IO.Path.GetFileName(s);
-                    destFile = System.IO.Path.Combine(targetPath, fileName);
-                    System.IO.File.Copy(s, destFile, true);
-                }
-            }
-            else
-            {
-                Console.WriteLine("La direccion mencionada no existe!");
-            }
 
             // Keep console window open in debug mode.
             Console.WriteLine("presione cualquier tecla para continuar con la configuracion.");
